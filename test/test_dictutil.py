@@ -63,8 +63,8 @@ class TestDictUtil(unittest.TestCase):
 
     def test_get_in(self):
         d = {1: {2: {3: 'data'}}}
-        self.assertEqual(get_in(d, [1,2,3]), 'data')
-        self.assertEqual(get_in(d, [1,2]), {3: 'data'})
+        self.assertEqual(get_in(d, [1, 2, 3]), 'data')
+        self.assertEqual(get_in(d, [1, 2]), {3: 'data'})
         self.assertEqual(get_in(d, [1]), {2: {3: 'data'}})
         self.assertEqual(get_in(d, []), d)
 
@@ -145,15 +145,15 @@ class TestDictUtil(unittest.TestCase):
 
     def test_key_set(self):
         d = {1: 2, 3: 4, 5: 6}
-        self.assertEqual(key_set(d), set([1,3,5]))
+        self.assertEqual(key_set(d), set([1, 3, 5]))
         d = {1: 2, 3: 4}
-        self.assertEqual(key_set(d), set([1,3]))
+        self.assertEqual(key_set(d), set([1, 3]))
         d = {}
         self.assertEqual(key_set(d), set())
 
     def test_value_set(self):
         d = {1: 2, 3: 4, 5: 6}
-        self.assertEqual(value_set(d), set([2,4,6]))
+        self.assertEqual(value_set(d), set([2, 4, 6]))
         d = {1: 0, 3: 0, 5: 0}
         self.assertEqual(value_set(d), set([0]))
         d = {}
@@ -173,7 +173,8 @@ class TestDictUtil(unittest.TestCase):
         d = {1: 'one', 2: 'two', 'knights': 'ni'}
         self.assertEqual(project(d, [1, 2]), {1: 'one', 2: 'two'})
         self.assertEqual(project(d, [1]), {1: 'one'})
-        self.assertEqual(project(d, [2, 'knights']), {2: 'two', 'knights': 'ni'})
+        self.assertEqual(project(d, [2, 'knights']), 
+                         {2: 'two', 'knights': 'ni'})
         self.assertEqual(project(d, []), {})
 
     # ruby values_at
@@ -186,13 +187,13 @@ class TestDictUtil(unittest.TestCase):
 
     def test_where(self):
         d = {1: 2, 2: 1, 3: 4, 4: 4}
-        pred = lambda k,v: k < v
+        pred = lambda k, v: k < v
         self.assertEqual(where(pred, d), {1: 2, 3: 4})
-        pred = lambda k,v: k > v
+        pred = lambda k, v: k > v
         self.assertEqual(where(pred, d), {2: 1})
-        pred = lambda k,v: k == v
+        pred = lambda k, v: k == v
         self.assertEqual(where(pred, d), {4: 4})
-        pred = lambda k,v: False
+        pred = lambda k, v: False
         self.assertEqual(where(pred, d), {})
 
     def test_where_key(self):
@@ -220,18 +221,18 @@ class TestDictUtil(unittest.TestCase):
     ## ruby
     def test_del_if(self):
         d = {1: 2, 2: 1, 3: 4, 4: 4}
-        pred = lambda k,v: k < v
+        pred = lambda k, v: k < v
         del_if(pred, d)
         self.assertEqual(d, {2: 1, 4: 4})
 
         d = {1: 2, 2: 1, 3: 4, 4: 4}
-        pred = lambda k,v: True
+        pred = lambda k, v: True
         del_if(pred, d)
         self.assertEqual(d, {})
 
         old_d = {1: 2, 2: 1, 3: 4, 4: 4}
         d = {1: 2, 2: 1, 3: 4, 4: 4}
-        pred = lambda k,v: False
+        pred = lambda k, v: False
         del_if(pred, d)
         self.assertEqual(d, old_d)
 
@@ -261,7 +262,7 @@ class TestDictUtil(unittest.TestCase):
         self.assertIs(rassoc(d, 1), None)
         self.assertIs(rassoc(d, 3), None)
         d = {1: 2, 3: 2}
-        self.assertIn(rassoc(d, 2), [(1,2), (3,2)])
+        self.assertIn(rassoc(d, 2), [(1, 2), (3, 2)])
         self.assertIs(rassoc({}, 1), None)
         self.assertIs(rassoc({}, None), None)
 
@@ -269,13 +270,13 @@ class TestDictUtil(unittest.TestCase):
     # make an iterator?
     def test_select(self): #select(pred, d)
         d = {1: 2, 2: 1, 3: 4, 4: 4}
-        pred = lambda k,v: k < v
+        pred = lambda k, v: k < v
         self.assertEqual(select(pred, d), {1: 2, 3: 4})
-        pred = lambda k,v: k > v
+        pred = lambda k, v: k > v
         self.assertEqual(select(pred, d), {2: 1})
-        pred = lambda k,v: k == v
+        pred = lambda k, v: k == v
         self.assertEqual(select(pred, d), {4: 4})
-        pred = lambda k,v: False
+        pred = lambda k, v: False
         self.assertEqual(select(pred, d), {})
 
 # has_value

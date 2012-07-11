@@ -1,3 +1,4 @@
+"""Useful functions for working with dicts."""
 from collections import defaultdict
 
 ## clojure
@@ -28,7 +29,6 @@ def merge_with(f, d1, d2, *ds):
         return merge_with(f, d, ds[0], *ds[1:])  #TODO shouldn't copy
     else:
         return d
-    pass
 
 def zipmap(ks, vs):
     """Returns a dict with the keys mapped to the corresponding vals."""
@@ -155,7 +155,7 @@ def where_value(pred, d):
 def del_if(pred, d):
     """Delete all items of `d` for which `pred(k,v)` holds.
     Operates on the dict in-place."""
-    to_del = [k for k,v in d.iteritems() if pred(k,v)]
+    to_del = [k for k, v in d.iteritems() if pred(k, v)]
     for k in to_del:
         del d[k]
 
@@ -169,15 +169,15 @@ def invert(d):
     """Return a new dict, with the keys and values reversed.
     If there are duplicate values in the original, the result will only
     have one of the corresponding keys."""
-    return dict((v,k) for k,v in d.iteritems())
+    return dict((v, k) for k, v in d.iteritems())
 
 #rename?
 def rassoc(d, val):
     """Searches through the dict comparing `val` with the value. Returns
     the first item (k, v) that matches."""
-    for k,v in d.iteritems():
+    for k, v in d.iteritems():
         if v == val:
-            return k,v
+            return k, v
     return None
 
 # same as 'where' above (but faster?!)
@@ -185,8 +185,8 @@ def rassoc(d, val):
 def select(pred, d):
     """Return the subdict of `d` where `pred(k,v)` holds."""
     ret = {}
-    for k,v in d.iteritems():
-        if pred(k,v):
+    for k, v in d.iteritems():
+        if pred(k, v):
             ret[k] = v
     return ret
 
