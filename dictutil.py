@@ -2,16 +2,33 @@ from collections import defaultdict
 
 ## clj
 def merge(d1, d2, *ds):
-    pass
+    d = d1.copy()  #TODO shouldn't copy
+    for k in d2:
+        d[k] = d2[k]
+    if ds:
+        return merge(d, ds[0], *ds[1:])  #TODO shouldn't copy
+    else:
+        return d
 
 def merge_with(f, d1, d2, *ds):
+    d = d1.copy()  #TODO shouldn't copy
+    for k in d2:
+        if k in d:
+            d[k] = f(d[k], d2[k])
+        else:
+            d[k] = d2[k]
+    if ds:
+        return merge_with(f, d, ds[0], *ds[1:])  #TODO shouldn't copy
+    else:
+        return d
     pass
 
 def zipmap(ks, vs):
     return dict(zip(ks, vs))
 
-def zipmap(ks, vs):
-    return dict.fromkeys(ks, vs)
+## different semantics
+#def zipmap(ks, vs):
+#    return dict.fromkeys(ks, vs)
 
 def get_in(d, ks):
     tmp = d
@@ -22,8 +39,9 @@ def get_in(d, ks):
 #def set_in(d, ks, v):
 
 ## haskell
-def union(d1, d2):
-    pass
+#union is like merge
+#def union(d1, d2):
+#    pass
 def intersection(d1, d2):
     pass
 def difference(d1, d2):
