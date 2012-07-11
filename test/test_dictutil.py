@@ -151,13 +151,13 @@ class TestDictUtil(unittest.TestCase):
         d = {}
         self.assertEqual(key_set(d), set())
 
-    def test_val_set(self):
+    def test_value_set(self):
         d = {1: 2, 3: 4, 5: 6}
-        self.assertEqual(val_set(d), set([2,4,6]))
+        self.assertEqual(value_set(d), set([2,4,6]))
         d = {1: 0, 3: 0, 5: 0}
-        self.assertEqual(val_set(d), set([0]))
+        self.assertEqual(value_set(d), set([0]))
         d = {}
-        self.assertEqual(val_set(d), set())
+        self.assertEqual(value_set(d), set())
 
     ## sql
     def test_group_by(self): #group_by(f, d)
