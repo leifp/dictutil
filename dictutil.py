@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-## clj
+## clojure
 def merge(d1, d2, *ds):
     d = d1.copy()  #TODO shouldn't copy
     for k in d2:
@@ -36,27 +36,58 @@ def get_in(d, ks):
         tmp = tmp[k]
     return tmp
 
+#TODO: as useful in python?
 #def set_in(d, ks, v):
+#def update_in(d, ks, f, *restargs):
 
 ## haskell
-#union is like merge
+
+#union is like merge (but merge prefers later args)
 #def union(d1, d2):
 #    pass
-def intersection(d1, d2):
-    pass
-def difference(d1, d2):
-    pass
-def map_values(f, d):
-    pass
-def map_keys(f, d):
-    pass
 
-def partition(pred, d):
-    pass
-def split(pred, d):
-    pass
+def intersection(d1, d2):
+    #TODO: using the simplest possible implementation, not optimal
+    ks1 = set(d1.iterkeys())
+    ks2 = set(d2.iterkeys())
+    ks = ks1 & ks2
+    return dict((k, d1[k]) for k in ks)
+
+def difference(d1, d2):
+    #TODO: using the simplest possible implementation, not optimal
+    ks1 = set(d1.iterkeys())
+    ks2 = set(d2.iterkeys())
+    ks = ks1 - ks2
+    return dict((k, d1[k]) for k in ks)
+
+def map_values(f, d):
+    return dict((k, f(v)) for k, v in d.iteritems())
+
+def map_keys(f, d):
+    return dict((f(k), v) for k, v in d.iteritems())
+
+def partition_on_value(pred, d):
+    pred_true = {}
+    pred_false = {}
+    for k, v in d.iteritems():
+        if pred(v):
+            pred_true[k] = v
+        else:
+            pred_false[k] = v
+    return pred_true, pred_false
+
+def partition_on_key(pred, d):
+    pred_true = {}
+    pred_false = {}
+    for k, v in d.iteritems():
+        if pred(k):
+            pred_true[k] = v
+        else:
+            pred_false[k] = v
+    return pred_true, pred_false
+
 def issubdict(d1, d2):
-    pass
+    return all((k in d2 and d1[k] == d2[k]) for k in d1)
 
 def key_set(d):
     return set(d.iterkeys())
@@ -64,8 +95,13 @@ def val_set(d):
     return set(d.itervalues())
 
 ## sql
+##TODO: group by f key, f val, f (key, val)?
 def group_by(f, d):
-    pass
+    res = defaultdict(list)
+    for k, v in d.iteritems():
+        newk = f(k)
+        res[newk].append(v)
+    return res
 
 def project(d, ks):
     return dict((k, d[k]) for k in ks)
@@ -115,7 +151,7 @@ def select(pred, d):
 # values_at
 
 ## javascript
-# js object-like dict class?
+#TODO: js object-like dict class?
 # e.g. d.foo is an alias for d['foo']
 
 ## perl

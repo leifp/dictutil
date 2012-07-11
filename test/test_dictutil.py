@@ -76,25 +76,72 @@ class TestDictUtil(unittest.TestCase):
     #    self.assertTrue(False)
 
     def test_intersection(self): #intersection(d1, d2)
-        self.assertTrue(False)
+        d1 = {1: 2, 3: 4, 5: 6}
+        d2 = {1: 1, 3: 3, 7: 8}
+        #favor keys from the first arg
+        self.assertEqual(intersection(d1, d2), {1: 2, 3: 4})
+        self.assertEqual(intersection(d2, d1), {1: 1, 3: 3})
+        self.assertEqual(intersection(d1, d1), d1)
+        self.assertEqual(intersection({}, d1), {})
+        self.assertEqual(intersection(d1, {}), {})
 
-    def test_difference(self): #difference(d1, d2)
-        self.assertTrue(False)
+    def test_difference(self):
+        d1 = {1: 2, 3: 4, 5: 6}
+        d2 = {1: 1, 3: 3, 7: 8}
+        #favor keys from the first arg
+        self.assertEqual(difference(d1, d2), {5: 6})
+        self.assertEqual(difference(d2, d1), {7: 8})
+        self.assertEqual(difference(d1, d1), {})
+        self.assertEqual(difference({}, d1), {})
+        self.assertEqual(difference(d1, {}), d1)
 
-    def test_map_values(self): #map_values(f, d)
-        self.assertTrue(False)
+    def test_map_values(self):
+        f = lambda v: 2*v
+        d = {1: 1, 2: 2, 3: 3}
+        self.assertEqual(map_values(f, d), {1: 2, 2: 4, 3: 6})
+        self.assertEqual(map_values(f, {}), {})
 
-    def test_map_keys(self): #map_keys(f, d)
-        self.assertTrue(False)
+    def test_map_keys(self):
+        f = lambda k: 2*k
+        d1 = {1: 10, 2: 20, 3: 30}
+        self.assertEqual(map_keys(f, d1), {2: 10, 4: 20, 6: 30})
+        g = lambda k: 0  #all keys map to same result key
+        d2 = {1: 1, 2: 2, 3: 3}  # ambiguous case
+        self.assertIn(map_keys(g, d2),
+                [{0: 1}, {0: 2}, {0: 3}])
+        self.assertEqual(map_keys(f, {}), {})
 
-    def test_partition(self): #partition(pred, d)
-        self.assertTrue(False)
+    def test_partition_on_value(self):
+        pred = lambda v: (v % 2 == 0)
+        d = {1: 1, 2: 3, 3: 6, 4: 8}
+        self.assertEqual(partition_on_value(pred, d),
+                ({3: 6,4: 8}, {1: 1, 2: 3}))
+        pred = lambda v: (v > 0)
+        self.assertEqual(partition_on_value(pred, d), (d, {}))
+        pred = lambda v: (v < 0)
+        self.assertEqual(partition_on_value(pred, d), ({}, d))
+        self.assertEqual(partition_on_value(pred, {}), ({}, {}))
 
-    def test_split(self): #split(pred, d)
-        self.assertTrue(False)
+    def test_partition_on_key(self):
+        pred = lambda k: (k % 2 == 0)
+        d = {1: 1, 2: 3, 3: 6, 4: 8}
+        self.assertEqual(partition_on_key(pred, d),
+                ({2: 3, 4: 8}, {1: 1, 3: 6}))
+        pred = lambda k: (k > 0)
+        self.assertEqual(partition_on_key(pred, d), (d, {}))
+        pred = lambda k: (k < 0)
+        self.assertEqual(partition_on_key(pred, d), ({}, d))
+        self.assertEqual(partition_on_key(pred, {}), ({}, {}))
 
-    def test_issubdict(self): #issubdict(d1, d2)
-        self.assertTrue(False)
+    def test_issubdict(self):
+        d1 = {1:2, 3: 4}
+        d2 = {1:2, 3: 4, 5:6}
+        self.assertTrue(issubdict(d1, d2))
+        self.assertFalse(issubdict(d2, d1))
+        self.assertTrue(issubdict({}, d1))
+        self.assertTrue(issubdict({}, d2))
+        self.assertFalse(issubdict(d1, {}))
+        self.assertFalse(issubdict(d2, {}))
 
     def test_key_set(self):
         d = {1: 2, 3: 4, 5: 6}
@@ -112,9 +159,15 @@ class TestDictUtil(unittest.TestCase):
         d = {}
         self.assertEqual(val_set(d), set())
 
-## sql
+    ## sql
     def test_group_by(self): #group_by(f, d)
-        self.assertTrue(False)
+        f = lambda k: k % 2
+        d = {1: 2, 2: 3, 3: 4, 4: 5}
+        grps = group_by(f, d) 
+        for k in grps:
+            grps[k].sort()
+        self.assertEqual(grps, {0: [3, 5], 1: [2, 4]})
+        self.assertEqual(group_by(f, {}), {})
 
     def test_project(self):
         d = {1: 'one', 2: 'two', 'knights': 'ni'}
@@ -123,7 +176,7 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(project(d, [2, 'knights']), {2: 'two', 'knights': 'ni'})
         self.assertEqual(project(d, []), {})
 
-# ruby values_at
+    # ruby values_at
     def test_project_list(self):
         d = {1: 'one', 2: 'two', 'knights': 'ni'}
         self.assertEqual(project_list(d, [1, 2]), ['one', 'two'])
@@ -164,7 +217,7 @@ class TestDictUtil(unittest.TestCase):
         pred = lambda v: False
         self.assertEqual(where_value(pred, d), {})
 
-## ruby
+    ## ruby
     def test_del_if(self):
         d = {1: 2, 2: 1, 3: 4, 4: 4}
         pred = lambda k,v: k < v
@@ -188,7 +241,7 @@ class TestDictUtil(unittest.TestCase):
         self.assertFalse(isempty({1:2, 3:4}))
         self.assertFalse(isempty({1:2, 3:4, 5:6}))
 
-# flatten
+    #TODO: flatten ?
 
     def test_invert(self):
         d = {1: 2, 3: 4}
@@ -200,7 +253,7 @@ class TestDictUtil(unittest.TestCase):
         d = {}
         self.assertEqual(invert(d), {})
 
-#rename?
+    #rename?
     def test_rassoc(self):
         d = {1: 2, 3: 4}
         self.assertEqual(rassoc(d, 2), (1, 2))
@@ -209,9 +262,11 @@ class TestDictUtil(unittest.TestCase):
         self.assertIs(rassoc(d, 3), None)
         d = {1: 2, 3: 2}
         self.assertIn(rassoc(d, 2), [(1,2), (3,2)])
+        self.assertIs(rassoc({}, 1), None)
+        self.assertIs(rassoc({}, None), None)
 
-# same as 'where' above (but faster?!)
-# make an iterator?
+    # same as 'where' above (but faster?!)
+    # make an iterator?
     def test_select(self): #select(pred, d)
         d = {1: 2, 2: 1, 3: 4, 4: 4}
         pred = lambda k,v: k < v
