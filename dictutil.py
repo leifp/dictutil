@@ -2,17 +2,14 @@
 from collections import defaultdict
 
 ## clojure
-def merge(d1, d2, *ds):
+def merge(*args):
     """Returns a dict that consists of the rest of the dicts merged with
     the first.  If a key occurs in more than one map, the value from the
     latter (left-to-right) will be the value in the result."""
-    d = d1.copy()  #TODO shouldn't copy
-    for k in d2:
-        d[k] = d2[k]
-    if ds:
-        return merge(d, ds[0], *ds[1:])  #TODO shouldn't copy
-    else:
-        return d
+    d = dict()
+    for arg in args:
+        d.update(arg)
+    return d
 
 def merge_with(f, d1, d2, *ds):
     """Returns a dict that consists of the rest of the dicts merged with
