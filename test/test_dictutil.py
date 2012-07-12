@@ -67,6 +67,7 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(get_in(d, [1, 2]), {3: 'data'})
         self.assertEqual(get_in(d, [1]), {2: {3: 'data'}})
         self.assertEqual(get_in(d, []), d)
+        self.assertIs(get_in(d, [1, 999]), None)
 
 #def set_in(d, ks, v):
 

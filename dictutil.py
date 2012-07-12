@@ -30,6 +30,7 @@ def merge_with(f, d1, d2, *ds):
     else:
         return d
 
+#TODO: 'map' is a java/clojure word.  Rename to 'zipdict' ?
 def zipmap(ks, vs):
     """Returns a dict with the keys mapped to the corresponding vals."""
     return dict(zip(ks, vs))
@@ -40,10 +41,13 @@ def zipmap(ks, vs):
 
 def get_in(d, ks):
     """ Returns the value in a nested associative structure, where `ks` is a 
-    sequence of keys. Returns None if the key is not present."""
+    sequence of keys. Returns None if the key is not present.  Returns `d` if
+    `ks` is empty."""
     tmp = d
     for k in ks:
-        tmp = tmp[k]
+        tmp = tmp.get(k)
+        if tmp is None:
+            return None
     return tmp
 
 #TODO: as useful in python?
