@@ -208,6 +208,8 @@ def select(pred, d):
 ## javascript
 #TODO: js object-like dict class?
 # e.g. d.foo is an alias for d['foo']
+# This has been done in a lot of places...
+# for reference see attributedict at https://github.com/bitprophet/lexicon
 
 ## perl
 # eh.
