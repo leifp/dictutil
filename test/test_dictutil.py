@@ -9,7 +9,7 @@ class TestDictUtil(unittest.TestCase):
     def test_merge(self):
         d1 = {'lancelot': 'brave', 'galahad': 'pure'}
         d2 = {'robin': 'not-quite-so-brave'}
-        self.assertEqual(merge(d1, d2), {'lancelot': 'brave', 
+        self.assertEqual(merge(d1, d2), {'lancelot': 'brave',
             'galahad': 'pure', 'robin': 'not-quite-so-brave'})
         self.assertEqual(merge(d1, {}), d1)
         self.assertEqual(merge({}, d1), d1)
@@ -34,10 +34,10 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(merge_with(f, {}, d1), d1)
         self.assertEqual(merge_with(f, {}, {}), {})
         self.assertEqual(merge_with(f, d1, d2, d3), {1: 0, 3: 3, 4: 0, 5: 5})
-        self.assertEqual(merge_with(f, d1, d2, d3, d4), 
+        self.assertEqual(merge_with(f, d1, d2, d3, d4),
                 {1: 11, 2: 22, 3: 3, 4: 0, 5: 5, 9: 99})
         f = lambda x, y: (x + (y, )) if isinstance(x, tuple) else (x, y)
-        self.assertEqual(merge_with(f, d1, d2, d3), 
+        self.assertEqual(merge_with(f, d1, d2, d3),
                 {1: (2, 40, -42), 3: (4, -1), 4: (3, -3), 5: (6, -6, 5)})
         self.assertEqual(merge_with(f), {})
         self.assertEqual(merge_with(f, d1), d1)
@@ -71,7 +71,14 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(get_in(d, []), d)
         self.assertIs(get_in(d, [1, 999]), None)
 
-#def set_in(d, ks, v):
+    def test_set_in(self):
+        assert set_in({}, [1,2,3,4], 'test') == {1: {2: {3: {4: 'test'}}}}
+        assert set_in({1: {2: {3: {4: 'anything but original'}}}},\
+            [1,2,3,4], 'test') == {1: {2: {3: {4: 'test'}}}}
+        assert set_in({1: {2: {3: 'anything but original'}, 'x': 5}},\
+            [1,2,3,4], 'test') == {1: {2: {3: {4: 'test'}}, 'x': 5}}
+        assert set_in({1: {2: {3: {4: 'anything but original'}, 'x': 5}}},\
+            [1,2,3,4], 'test') == {1: {2: {3: {4: 'test'}, 'x': 5}}}
 
 ## haskell
     #union is like merge
@@ -166,7 +173,7 @@ class TestDictUtil(unittest.TestCase):
     def test_group_by(self): #group_by(f, d)
         f = lambda k: k % 2
         d = {1: 2, 2: 3, 3: 4, 4: 5}
-        grps = group_by(f, d) 
+        grps = group_by(f, d)
         for k in grps:
             grps[k].sort()
         self.assertEqual(grps, {0: [3, 5], 1: [2, 4]})
@@ -176,7 +183,7 @@ class TestDictUtil(unittest.TestCase):
         d = {1: 'one', 2: 'two', 'knights': 'ni'}
         self.assertEqual(project(d, [1, 2]), {1: 'one', 2: 'two'})
         self.assertEqual(project(d, [1]), {1: 'one'})
-        self.assertEqual(project(d, [2, 'knights']), 
+        self.assertEqual(project(d, [2, 'knights']),
                          {2: 'two', 'knights': 'ni'})
         self.assertEqual(project(d, []), {})
 

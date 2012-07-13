@@ -2,27 +2,27 @@
 from collections import defaultdict
 
 ## clojure
-def merge(*args):
+def merge(*dicts):
     """Returns a dict that consists of the rest of the dicts merged with
     the first.  If a key occurs in more than one map, the value from the
     latter (left-to-right) will be the value in the result."""
     d = dict()
-    for arg in args:
-        d.update(arg)
+    for _dict in dicts:
+        d.update(_dict)
     return d
 
-def merge_with(f, *args):
+def merge_with(f, *dicts):
     """Returns a dict that consists of the rest of the dicts merged with
     the first.  If a key occurs in more than one map, the value from the
     latter (left-to-right) will be the combined with the value in the former
     by calling f(former_val, latter_val).  Calling with no dicts returns {}."""
     d = dict()
-    for arg in args:
-        for k in arg:
+    for _dict in dicts:
+        for k in _dict:
             if k in d:
-                d[k] = f(d[k], arg[k])
+                d[k] = f(d[k], _dict[k])
             else:
-                d[k] = arg[k]
+                d[k] = _dict[k]
     return d
 
 def zipdict(ks, vs):
@@ -34,7 +34,7 @@ def zipdict(ks, vs):
 #    return dict.fromkeys(ks, vs)
 
 def get_in(d, ks):
-    """ Returns the value in a nested associative structure, where `ks` is a 
+    """ Returns the value in a nested associative structure, where `ks` is a
     sequence of keys. Returns None if the key is not present.  Returns `d` if
     `ks` is empty."""
     tmp = d
@@ -44,8 +44,22 @@ def get_in(d, ks):
             return None
     return tmp
 
-#TODO: as useful in python?
-#def set_in(d, ks, v):
+def set_in(d, ks, v):
+    """ Sets the value in a nested associative structure, where `ks` is a
+    sequence of keys. Creates the key if the key is not present.  Returns `d`
+    with updates."""
+    tmp = d
+    # tuples are immutable, convert to list
+    ks = list(ks)
+    last = ks.pop(-1)
+    for k in ks:
+        val = tmp.setdefault(k, {})
+        if not isinstance(val, dict):
+            val = tmp[k] = {}
+        tmp = val
+    tmp[last] = v
+    return d
+
 #def update_in(d, ks, f, *restargs):
 
 ## haskell
@@ -55,7 +69,7 @@ def get_in(d, ks):
 #    pass
 
 def intersection(d1, d2):
-    """Intersection of two dicts. 
+    """Intersection of two dicts.
     Return data in the first dict for the keys existing in both dicts."""
     #TODO: using the simplest possible implementation, not optimal
     ks1 = set(d1.iterkeys())
@@ -81,9 +95,9 @@ def map_keys(f, d):
     return dict((f(k), v) for k, v in d.iteritems())
 
 def partition_on_value(pred, d):
-    """Partition the dict according to a predicate on the values. 
+    """Partition the dict according to a predicate on the values.
     Returns a tuple of two dicts:
-    The first dict contains all elements that satisfy the predicate, 
+    The first dict contains all elements that satisfy the predicate,
     the second all elements that fail the predicate."""
     pred_true = {}
     pred_false = {}
@@ -95,9 +109,9 @@ def partition_on_value(pred, d):
     return pred_true, pred_false
 
 def partition_on_key(pred, d):
-    """Partition the dict according to a predicate on the keys. 
+    """Partition the dict according to a predicate on the keys.
     Returns a tuple of two dicts:
-    The first dict contains all elements that satisfy the predicate, 
+    The first dict contains all elements that satisfy the predicate,
     the second all elements that fail the predicate."""
     pred_true = {}
     pred_false = {}
@@ -122,7 +136,7 @@ def value_set(d):
 ## sql
 ##TODO: group by f key, f val, f (key, val)?
 def group_by(f, d):
-    """Group by a function of the keys.  Returns a dict given by 
+    """Group by a function of the keys.  Returns a dict given by
     return_dict[f(k)] = [all values of original with same f(k)]."""
     res = defaultdict(list)
     for k, v in d.iteritems():
