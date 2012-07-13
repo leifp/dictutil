@@ -40,25 +40,25 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(merge_with(f, d1, d2, d3), 
                 {1: (2, 40, -42), 3: (4, -1), 4: (3, -3), 5: (6, -6, 5)})
 
-    def test_zipmap(self):
+    def test_zipdict(self):
         ks = [1, 2, 3]; vs = "abc"
-        self.assertEqual(zipmap(ks, vs), {1: 'a', 2: 'b', 3: 'c'})
+        self.assertEqual(zipdict(ks, vs), {1: 'a', 2: 'b', 3: 'c'})
         ks = [1, 2, 3]; vs = [2, 4, 6]
-        self.assertEqual(zipmap(ks, vs), {1: 2, 2: 4, 3: 6})
+        self.assertEqual(zipdict(ks, vs), {1: 2, 2: 4, 3: 6})
         ks = [1, 2, 3]; vs = [2, 4]
-        self.assertEqual(zipmap(ks, vs), {1: 2, 2: 4})
+        self.assertEqual(zipdict(ks, vs), {1: 2, 2: 4})
         ks = [1, 2, 3]; vs = [2]
-        self.assertEqual(zipmap(ks, vs), {1: 2})
+        self.assertEqual(zipdict(ks, vs), {1: 2})
         ks = [1, 2, 3]; vs = []
-        self.assertEqual(zipmap(ks, vs), {})
+        self.assertEqual(zipdict(ks, vs), {})
         ks = [1, 2]; vs = [2, 4, 6]
-        self.assertEqual(zipmap(ks, vs), {1: 2, 2: 4})
+        self.assertEqual(zipdict(ks, vs), {1: 2, 2: 4})
         ks = [1]; vs = [2, 4, 6]
-        self.assertEqual(zipmap(ks, vs), {1: 2})
+        self.assertEqual(zipdict(ks, vs), {1: 2})
         ks = []; vs = [2, 4, 6]
-        self.assertEqual(zipmap(ks, vs), {})
+        self.assertEqual(zipdict(ks, vs), {})
 
-    #def test_zipmap(self):
+    #def test_zipdict(self):
     #    self.assertTrue(False)
 
     def test_get_in(self):

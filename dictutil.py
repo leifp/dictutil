@@ -27,13 +27,12 @@ def merge_with(f, d1, d2, *ds):
     else:
         return d
 
-#TODO: 'map' is a java/clojure word.  Rename to 'zipdict' ?
-def zipmap(ks, vs):
+def zipdict(ks, vs):
     """Returns a dict with the keys mapped to the corresponding vals."""
     return dict(zip(ks, vs))
 
 ## different semantics
-#def zipmap(ks, vs):
+#def zipdict(ks, vs):
 #    return dict.fromkeys(ks, vs)
 
 def get_in(d, ks):
