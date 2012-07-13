@@ -109,6 +109,12 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(set_in(d, [1, 2, 3], 999),
                          {1: {2: [1,2,3,999]}})
 
+        # make sure we don't modify the `ks` argument
+        ks = [1, 2, 3, 4]
+        d = set_in({}, ks, 'test')
+        self.assertEqual(d, {1: {2: {3: {4: 'test'}}}})
+        self.assertEqual(ks, [1, 2, 3, 4])
+
 ## haskell
     #union is like merge
     #def test_union(self): #union(d1, d2)
