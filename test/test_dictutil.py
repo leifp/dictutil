@@ -39,6 +39,8 @@ class TestDictUtil(unittest.TestCase):
         f = lambda x, y: (x + (y, )) if isinstance(x, tuple) else (x, y)
         self.assertEqual(merge_with(f, d1, d2, d3), 
                 {1: (2, 40, -42), 3: (4, -1), 4: (3, -3), 5: (6, -6, 5)})
+        self.assertEqual(merge_with(f), {})
+        self.assertEqual(merge_with(f, d1), d1)
 
     def test_zipdict(self):
         ks = [1, 2, 3]; vs = "abc"

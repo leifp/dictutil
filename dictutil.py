@@ -11,21 +11,19 @@ def merge(*args):
         d.update(arg)
     return d
 
-def merge_with(f, d1, d2, *ds):
+def merge_with(f, *args):
     """Returns a dict that consists of the rest of the dicts merged with
     the first.  If a key occurs in more than one map, the value from the
     latter (left-to-right) will be the combined with the value in the former
-    by calling f(former_val, latter_val)."""
-    d = d1.copy()  #TODO shouldn't copy
-    for k in d2:
-        if k in d:
-            d[k] = f(d[k], d2[k])
-        else:
-            d[k] = d2[k]
-    if ds:
-        return merge_with(f, d, ds[0], *ds[1:])  #TODO shouldn't copy
-    else:
-        return d
+    by calling f(former_val, latter_val).  Calling with no dicts returns {}."""
+    d = dict()
+    for arg in args:
+        for k in arg:
+            if k in d:
+                d[k] = f(d[k], arg[k])
+            else:
+                d[k] = arg[k]
+    return d
 
 def zipdict(ks, vs):
     """Returns a dict with the keys mapped to the corresponding vals."""
