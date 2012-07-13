@@ -48,16 +48,15 @@ def set_in(d, ks, v):
     """ Sets the value in a nested associative structure, where `ks` is a
     sequence of keys. Creates the key if the key is not present.  Returns `d`
     with updates."""
+    if not ks:
+        return d  #TODO: is this the correct semantics?
+    ks, lastkey = ks[:-1], ks[-1]  #don't modify orig. `ks`
     tmp = d
-    # tuples are immutable, convert to list
-    ks = list(ks)
-    last = ks.pop(-1)
     for k in ks:
+        print tmp
         val = tmp.setdefault(k, {})
-        if not isinstance(val, dict):
-            val = tmp[k] = {}
         tmp = val
-    tmp[last] = v
+    tmp[lastkey] = v
     return d
 
 #def update_in(d, ks, f, *restargs):

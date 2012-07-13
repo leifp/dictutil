@@ -72,13 +72,42 @@ class TestDictUtil(unittest.TestCase):
         self.assertIs(get_in(d, [1, 999]), None)
 
     def test_set_in(self):
-        assert set_in({}, [1,2,3,4], 'test') == {1: {2: {3: {4: 'test'}}}}
-        assert set_in({1: {2: {3: {4: 'anything but original'}}}},\
-            [1,2,3,4], 'test') == {1: {2: {3: {4: 'test'}}}}
-        assert set_in({1: {2: {3: 'anything but original'}, 'x': 5}},\
-            [1,2,3,4], 'test') == {1: {2: {3: {4: 'test'}}, 'x': 5}}
-        assert set_in({1: {2: {3: {4: 'anything but original'}, 'x': 5}}},\
-            [1,2,3,4], 'test') == {1: {2: {3: {4: 'test'}, 'x': 5}}}
+        self.assertEqual(set_in({}, [], 'test'), {})
+        self.assertEqual(set_in({'answer': 42}, [], 'test'), {'answer': 42})
+        self.assertEqual(set_in({}, [1, 2, 3, 4], 'test'),
+                         {1: {2: {3: {4: 'test'}}}})
+        self.assertEqual(set_in({1: {2: {3: {4: 'anything but original'}}}},
+                                [1, 2, 3, 4], 'test'),
+                         {1: {2: {3: {4: 'test'}}}})
+        self.assertEqual(
+            set_in({1: {2: {3: {4: 'anything but original'}, 'x': 5}}},
+                   [1, 2, 3, 4], 'test'),
+            {1: {2: {3: {4: 'test'}, 'x': 5}}})
+
+        # this will raise an exception
+        d = {1: {2: {3: 'anything but original'}, 'x': 5}}
+        try:
+            d[1][2][3][4] = 'test'
+            # unreachable
+            self.fail("python dicts seem to have changed semantics.")
+        except TypeError, e:
+            self.assertTrue(
+              0 <= e.message.find(
+                "'str' object does not support item assignment"))
+        # so we should, too
+        d = {1: {2: {3: 'anything but original'}, 'x': 5}}
+        self.assertRaisesRegexp(
+          TypeError, "'str' object does not support item assignment",
+          set_in, d, [1,2,3,4], 'test')
+
+        # this will happily update lists
+        d = {1: {2: [1, 2, 3, 4]}}
+        d[1][2][3] = 999
+        self.assertEqual(d, {1: {2: [1, 2, 3, 999]}})
+        # so we should, too
+        d = {1: {2: [1, 2, 3, 4]}}
+        self.assertEqual(set_in(d, [1, 2, 3], 999),
+                         {1: {2: [1,2,3,999]}})
 
 ## haskell
     #union is like merge
