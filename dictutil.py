@@ -59,7 +59,21 @@ def set_in(d, ks, v):
     tmp[lastkey] = v
     return d
 
-#def update_in(d, ks, f, *restargs):
+def update_in(d, ks, f, *restargs):
+    """'Updates' the value in a nested associative structure, where `ks` is a
+    sequence of keys and `f` is a function that will take the old value and 
+    any supplied args and return the new value.  Equivalent to
+    d[k1][k2][...] = f(d[k1][k2][...], *restargs).
+    An error is raised if the key at any level does not exist.
+    """
+    if not ks:
+        raise KeyError
+    ks, lastkey = ks[:-1], ks[-1]  #don't modify orig. `ks`
+    tmp = d
+    for k in ks:
+        tmp = tmp[k]
+    tmp[lastkey] = f(tmp[lastkey], *restargs)
+    return d
 
 ## haskell
 

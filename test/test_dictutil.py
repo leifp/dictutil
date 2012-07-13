@@ -115,6 +115,42 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(d, {1: {2: {3: {4: 'test'}}}})
         self.assertEqual(ks, [1, 2, 3, 4])
 
+    def test_update_in(self):
+        add10 = lambda v: v + 10
+        addn = lambda v, n: v + n
+        self.assertEqual(update_in({1: 32}, [1], add10), {1: 42})
+        self.assertEqual(update_in({1: {2: {3: {4: 32}}}}, [1, 2, 3, 4], add10),
+                         {1: {2: {3: {4: 42}}}})
+        self.assertEqual(
+            update_in({1: {2: {3: {4: 32}, 'x': 5}}}, [1, 2, 3, 4], add10),
+            {1: {2: {3: {4: 42}, 'x': 5}}})
+        self.assertEqual(update_in({1: 32}, [1], add10),
+                         update_in({1: 32}, [1], addn, 10))
+        self.assertEqual(update_in({1: {2: ['foo']}}, [1, 2], 
+                                   lambda v, x: v + x, ['bar']),
+                         {1: {2: ['foo', 'bar']}})
+
+        # invalid update func
+        d = {1: {2: {3: 'anything but original'}, 'x': 5}}
+        self.assertRaisesRegexp(
+          TypeError, "cannot concatenate 'str' and 'int' objects",
+          update_in, d, [1,2,3,4], add10)
+        # key in path doesn't exist
+        d = {1: {2: {3: {}}, 'x': 5}}
+        self.assertRaisesRegexp(KeyError, "4",
+                                update_in, d, [1,2,3,4], add10)
+        # empty ks
+        self.assertRaises(KeyError, update_in, d, [], add10)
+
+        # this will happily update lists
+        d = {1: {2: [1, 2, 3, 4]}}
+        d[1][2][3] = add10(d[1][2][3])
+        self.assertEqual(d, {1: {2: [1, 2, 3, 14]}})
+        # so we should, too
+        d = {1: {2: [1, 2, 3, 4]}}
+        self.assertEqual(update_in(d, [1, 2, 3], add10),
+                         {1: {2: [1, 2, 3, 14]}})
+
 ## haskell
     #union is like merge
     #def test_union(self): #union(d1, d2)
