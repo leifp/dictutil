@@ -389,12 +389,6 @@ class TestDictUtil(unittest.TestCase):
         del_if(pred, d)
         self.assertEqual(d, old_d)
 
-    def test_isempty(self):
-        self.assertTrue(isempty({}))
-        self.assertFalse(isempty({1:2}))
-        self.assertFalse(isempty({1:2, 3:4}))
-        self.assertFalse(isempty({1:2, 3:4, 5:6}))
-
     #TODO: flatten ?
 
     def test_invert(self):

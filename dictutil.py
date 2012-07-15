@@ -215,10 +215,6 @@ def del_if(pred, d):
     for k in to_del:
         del d[k]
 
-def isempty(d):
-    """Is the dict empty?"""
-    return len(d) == 0
-
 # flatten
 
 def invert(d):
