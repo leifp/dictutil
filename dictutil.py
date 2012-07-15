@@ -33,6 +33,7 @@ def zipdict(ks, vs):
 #def zipdict(ks, vs):
 #    return dict.fromkeys(ks, vs)
 
+#TODO: add not_found=None ?
 def get_in(d, ks):
     """ Returns the value in a nested associative structure, where `ks` is a
     sequence of keys. Returns None if the key is not present.  Returns `d` if
@@ -47,13 +48,12 @@ def get_in(d, ks):
 def set_in(d, ks, v):
     """ Sets the value in a nested associative structure, where `ks` is a
     sequence of keys. Creates the key if the key is not present.  Returns `d`
-    with updates."""
+    with updates.  MUTATES `d`."""
     if not ks:
         return d  #TODO: is this the correct semantics?
     ks, lastkey = ks[:-1], ks[-1]  #don't modify orig. `ks`
     tmp = d
     for k in ks:
-        print tmp
         val = tmp.setdefault(k, {})
         tmp = val
     tmp[lastkey] = v
@@ -65,6 +65,7 @@ def update_in(d, ks, f, *restargs):
     any supplied args and return the new value.  Equivalent to
     d[k1][k2][...] = f(d[k1][k2][...], *restargs).
     An error is raised if the key at any level does not exist.
+    MUTATES `d`.
     """
     if not ks:
         raise KeyError
@@ -139,6 +140,7 @@ def issubdict(d1, d2):
     """All keys in `d1` are in `d2`, and corresponding values are equal."""
     return all((k in d2 and d1[k] == d2[k]) for k in d1)
 
+#TODO: for python >= 2.7, reference dictviews
 def key_set(d):
     """A set of all the keys of a dict."""
     return set(d.iterkeys())
@@ -148,6 +150,7 @@ def value_set(d):
 
 ## sql
 ##TODO: group by f key, f val, f (key, val)?
+##TODO: add sort (kwargs cmp, key, reverse)?
 def group_by(f, d):
     """Group by a function of the keys.  Returns a dict given by
     return_dict[f(k)] = [all values of original with same f(k)]."""
@@ -179,7 +182,7 @@ def where_value(pred, d):
 ## ruby
 def del_if(pred, d):
     """Delete all items of `d` for which `pred(k,v)` holds.
-    Operates on the dict in-place."""
+    MUTATES `d`."""
     to_del = [k for k, v in d.iteritems() if pred(k, v)]
     for k in to_del:
         del d[k]

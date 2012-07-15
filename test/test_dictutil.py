@@ -363,3 +363,5 @@ class TestDictUtil(unittest.TestCase):
 # has_value
 # values_at
 
+if __name__ == '__main__':
+    unittest.main()
