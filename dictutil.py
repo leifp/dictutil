@@ -109,33 +109,40 @@ def map_keys(f, d):
     """Map a function over all keys in the dict."""
     return dict((f(k), v) for k, v in d.iteritems())
 
+def partition(f, d):
+    """Partition the dict according to an equivalence relation.
+
+    Calls f(key, value) for all (key, value) pairs in the dict d.  The return
+    value of f must be hashable.
+    Returns a new dict where the keys are distinct return values of f, and the
+    values are dicts containing the equivalence classes distinguished by those
+    return values:
+
+    >>> partition(lambda k, v: (k % 3), {0: 1, 1: 2, 2: 3, 3: 4, 4: 5})
+    {0: {0: 1, 3: 4}, 1: {1: 2, 4: 5}, 2: {2: 3}}
+    """
+    partition = defaultdict(dict)
+    for k, v in d.iteritems():
+        partition[f(k, v)][k] = v
+    return partition
+
 def partition_on_value(pred, d):
     """Partition the dict according to a predicate on the values.
     Returns a tuple of two dicts:
     The first dict contains all elements that satisfy the predicate,
     the second all elements that fail the predicate."""
-    pred_true = {}
-    pred_false = {}
-    for k, v in d.iteritems():
-        if pred(v):
-            pred_true[k] = v
-        else:
-            pred_false[k] = v
-    return pred_true, pred_false
+    f = lambda k, v: bool(pred(v))
+    p = partition(f, d)
+    return p[True], p[False]
 
 def partition_on_key(pred, d):
     """Partition the dict according to a predicate on the keys.
     Returns a tuple of two dicts:
     The first dict contains all elements that satisfy the predicate,
     the second all elements that fail the predicate."""
-    pred_true = {}
-    pred_false = {}
-    for k, v in d.iteritems():
-        if pred(k):
-            pred_true[k] = v
-        else:
-            pred_false[k] = v
-    return pred_true, pred_false
+    f = lambda k, v: bool(pred(k))
+    p = partition(f, d)
+    return p[True], p[False]
 
 def issubdict(d1, d2):
     """All keys in `d1` are in `d2`, and corresponding values are equal."""

@@ -208,6 +208,25 @@ class TestDictUtil(unittest.TestCase):
                 [{0: 1}, {0: 2}, {0: 3}])
         self.assertEqual(map_keys(f, {}), {})
 
+    def test_partition(self):
+        f = lambda k, v: (k % 3)
+        d = {0: 1, 1: 2, 2: 3, 3: 4, 4: 5}
+        self.assertEqual(partition(f, d),
+            {0: {0: 1, 3: 4}, 
+             1: {1: 2, 4: 5}, 
+             2: {2: 3}})
+        f = lambda k, v: len(k)
+        d = {'a': 1, 'b': 11, 'cc': 2, 'dd': 22, 'eee': 3, 'fff': 33}
+        self.assertEqual(partition(f, d),
+            {1: {'a': 1, 'b': 11},
+             2: {'cc': 2, 'dd': 22},
+             3: {'eee': 3, 'fff': 33}})
+        f = lambda k, v: k < v
+        d = {1: 2, 2: 1, 5: 8, 7: 0, 9: 9}
+        self.assertEqual(partition(f, d),
+            {True: {1: 2, 5: 8},
+             False: {2: 1, 7: 0, 9: 9}})
+
     def test_partition_on_value(self):
         pred = lambda v: (v % 2 == 0)
         d = {1: 1, 2: 3, 3: 6, 4: 8}
