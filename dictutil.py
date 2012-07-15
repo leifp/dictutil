@@ -150,7 +150,6 @@ def value_set(d):
 
 ## sql
 ##TODO: group by f key, f val, f (key, val)?
-##TODO: add sort (kwargs cmp, key, reverse)?
 def group_by(f, d, cmp=None, key=None, reverse=None):
     """Group by a function of the keys.  Returns a dict given by
     return_dict[f(k)] = [all values of original with same f(k)].
@@ -164,6 +163,21 @@ def group_by(f, d, cmp=None, key=None, reverse=None):
         reverse = False if reverse is None else reverse
         for k in res:
             res[k].sort(cmp=cmp, key=key, reverse=reverse)
+    return res
+
+def index(d, index_f):
+    """Creates an index of `d`:
+    * Calls `index_f` for each value of `d`; this should return an iterable.
+    * For each index_key in the iterable, add the item key to the set at
+      result[index_key].
+    E.g.,
+    >>> index({1: 'foo bar', 2: 'foo baz'}, str.split)
+    {'foo': set([1, 2]), 'bar': set([1]), 'baz': set([2])}"""
+    res = defaultdict(set)
+    for k, v in d.iteritems():
+        idx_ks = index_f(v)
+        for idx_k in idx_ks:
+            res[idx_k].add(k)
     return res
 
 def project(d, ks):

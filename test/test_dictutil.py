@@ -241,7 +241,7 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(value_set(d), set())
 
     ## sql
-    def test_group_by(self): #group_by(f, d)
+    def test_group_by(self):
         f = lambda k: k % 2
         d = {1: 2, 2: 3, 3: 4, 4: 5}
 
@@ -271,6 +271,21 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(group_by(bool, d, cmp=cmp_third, reverse=True),
                          {True: [(1, 2, 3), (1, 3, 2), (3, 2, 1)]})
 
+    def test_index(self):
+        self.assertEqual(index({1: 'foo bar', 2: 'foo baz'}, str.split),
+            {'foo': set([1, 2]), 'bar': set([1]), 'baz': set([2])})
+        import re
+        tokenize = lambda s: re.split(r'\s*,\s*', s)
+        self.assertEqual(index({1: 'foo, bar,baz', 2: 'foo,baz'}, tokenize),
+            {'foo': set([1, 2]), 'bar': set([1]), 'baz': set([1, 2])})
+        upto = lambda n: xrange(n)  # works with generators
+        self.assertEqual(index({1: 3, 2: 2}, upto),
+            {0: set([1, 2]), 1: set([1, 2]), 2: set([1])})
+        self.assertEqual(
+                index({1: {'name': 'arthur'}, 2: {'name': 'arthur'},
+                       3: {'name': 'robin'}, 4: {'no': 'name'}},
+                       lambda d: [d.get('name')]),  # need iterable
+            {'arthur': set([1, 2]), 'robin': set([3]), None: set([4])})
 
     def test_project(self):
         d = {1: 'one', 2: 'two', 'knights': 'ni'}
