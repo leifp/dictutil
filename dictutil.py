@@ -151,13 +151,19 @@ def value_set(d):
 ## sql
 ##TODO: group by f key, f val, f (key, val)?
 ##TODO: add sort (kwargs cmp, key, reverse)?
-def group_by(f, d):
+def group_by(f, d, cmp=None, key=None, reverse=None):
     """Group by a function of the keys.  Returns a dict given by
-    return_dict[f(k)] = [all values of original with same f(k)]."""
+    return_dict[f(k)] = [all values of original with same f(k)].
+    If any of `cmp`, `key`, or `reverse` is given, sort all of the values
+    of the result with `list.sort`."""
     res = defaultdict(list)
     for k, v in d.iteritems():
         newk = f(k)
         res[newk].append(v)
+    if cmp or key or (reverse is not None):
+        reverse = False if reverse is None else reverse
+        for k in res:
+            res[k].sort(cmp=cmp, key=key, reverse=reverse)
     return res
 
 def project(d, ks):

@@ -244,11 +244,33 @@ class TestDictUtil(unittest.TestCase):
     def test_group_by(self): #group_by(f, d)
         f = lambda k: k % 2
         d = {1: 2, 2: 3, 3: 4, 4: 5}
+
+        self.assertEqual(group_by(f, {}), {})
+
         grps = group_by(f, d)
         for k in grps:
             grps[k].sort()
         self.assertEqual(grps, {0: [3, 5], 1: [2, 4]})
-        self.assertEqual(group_by(f, {}), {})
+
+        self.assertEqual(group_by(f, d, reverse=True),
+                         {0: [5, 3], 1: [4, 2]})
+
+        d = {1: (1, 2, 3), 2: (1, 3, 2), 3: (3, 2, 1)}
+        second_third = lambda x: (x[1], x[2])
+        cmp_third = lambda x, y: cmp(x[2], y[2])
+        self.assertEqual(group_by(bool, d, reverse=False),
+                         {True: [(1, 2, 3), (1, 3, 2), (3, 2, 1)]})
+        self.assertEqual(group_by(bool, d, reverse=True),
+                         {True: [(3, 2, 1), (1, 3, 2), (1, 2, 3)]})
+        self.assertEqual(group_by(bool, d, key=second_third),
+                         {True: [(3, 2, 1), (1, 2, 3), (1, 3, 2)]})
+        self.assertEqual(group_by(bool, d, key=second_third, reverse=True),
+                         {True: [(1, 3, 2), (1, 2, 3), (3, 2, 1)]})
+        self.assertEqual(group_by(bool, d, cmp=cmp_third),
+                         {True: [(3, 2, 1), (1, 3, 2), (1, 2, 3)]})
+        self.assertEqual(group_by(bool, d, cmp=cmp_third, reverse=True),
+                         {True: [(1, 2, 3), (1, 3, 2), (3, 2, 1)]})
+
 
     def test_project(self):
         d = {1: 'one', 2: 'two', 'knights': 'ni'}
