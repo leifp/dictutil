@@ -72,17 +72,20 @@ class TestDictUtil(unittest.TestCase):
         self.assertIs(get_in(d, [1, 999]), None)
 
     def test_set_in(self):
-        self.assertEqual(set_in({}, [], 'test'), {})
-        self.assertEqual(set_in({'answer': 42}, [], 'test'), {'answer': 42})
-        self.assertEqual(set_in({}, [1, 2, 3, 4], 'test'),
-                         {1: {2: {3: {4: 'test'}}}})
-        self.assertEqual(set_in({1: {2: {3: {4: 'anything but original'}}}},
-                                [1, 2, 3, 4], 'test'),
-                         {1: {2: {3: {4: 'test'}}}})
-        self.assertEqual(
-            set_in({1: {2: {3: {4: 'anything but original'}, 'x': 5}}},
-                   [1, 2, 3, 4], 'test'),
-            {1: {2: {3: {4: 'test'}, 'x': 5}}})
+        d = {}
+        set_in(d, [1, 2, 3, 4], 'test')
+        self.assertEqual(d, {1: {2: {3: {4: 'test'}}}})
+        d = {1: {2: {3: {4: 'anything but original'}}}}
+        set_in(d, [1, 2, 3, 4], 'test')
+        self.assertEqual(d, {1: {2: {3: {4: 'test'}}}})
+        d = {1: {2: {3: {4: 'anything but original'}, 'x': 5}}}
+        set_in(d, [1, 2, 3, 4], 'test')
+        self.assertEqual(d, {1: {2: {3: {4: 'test'}, 'x': 5}}})
+
+        self.assertRaisesRegexp(KeyError, "Empty keys iterable",
+            set_in, {}, [], 'test')
+        self.assertRaisesRegexp(KeyError, "Empty keys iterable",
+            set_in, {'answer': 42}, [], 'test')
 
         # this will raise an exception
         d = {1: {2: {3: 'anything but original'}, 'x': 5}}
@@ -106,29 +109,41 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(d, {1: {2: [1, 2, 3, 999]}})
         # so we should, too
         d = {1: {2: [1, 2, 3, 4]}}
-        self.assertEqual(set_in(d, [1, 2, 3], 999),
-                         {1: {2: [1,2,3,999]}})
+        set_in(d, [1, 2, 3], 999)
+        self.assertEqual(d, {1: {2: [1, 2, 3, 999]}})
 
         # make sure we don't modify the `ks` argument
+        d = {}
         ks = [1, 2, 3, 4]
-        d = set_in({}, ks, 'test')
+        set_in(d, ks, 'test')
         self.assertEqual(d, {1: {2: {3: {4: 'test'}}}})
         self.assertEqual(ks, [1, 2, 3, 4])
 
     def test_update_in(self):
         add10 = lambda v: v + 10
         addn = lambda v, n: v + n
-        self.assertEqual(update_in({1: 32}, [1], add10), {1: 42})
-        self.assertEqual(update_in({1: {2: {3: {4: 32}}}}, [1, 2, 3, 4], add10),
-                         {1: {2: {3: {4: 42}}}})
-        self.assertEqual(
-            update_in({1: {2: {3: {4: 32}, 'x': 5}}}, [1, 2, 3, 4], add10),
-            {1: {2: {3: {4: 42}, 'x': 5}}})
-        self.assertEqual(update_in({1: 32}, [1], add10),
-                         update_in({1: 32}, [1], addn, 10))
-        self.assertEqual(update_in({1: {2: ['foo']}}, [1, 2], 
-                                   lambda v, x: v + x, ['bar']),
-                         {1: {2: ['foo', 'bar']}})
+
+        d = {1: 32}
+        update_in(d, [1], add10)
+        self.assertEqual(d, {1: 42})
+
+        d = {1: {2: {3: {4: 32}}}}
+        update_in(d, [1, 2, 3, 4], add10)
+        self.assertEqual(d, {1: {2: {3: {4: 42}}}})
+
+        d = {1: {2: {3: {4: 32}, 'x': 5}}}
+        update_in(d, [1, 2, 3, 4], add10)
+        self.assertEqual(d, {1: {2: {3: {4: 42}, 'x': 5}}})
+
+        d1 = {1: 32}
+        d2 = {1: 32}
+        update_in(d1, [1], add10)
+        update_in(d2, [1], addn, 10)
+        self.assertEqual(d1, d2)
+
+        d = {1: {2: ['foo']}}
+        update_in(d, [1, 2], lambda v, x: v + x, ['bar'])
+        self.assertEqual(d, {1: {2: ['foo', 'bar']}})
 
         # invalid update func
         d = {1: {2: {3: 'anything but original'}, 'x': 5}}
@@ -140,7 +155,8 @@ class TestDictUtil(unittest.TestCase):
         self.assertRaisesRegexp(KeyError, "4",
                                 update_in, d, [1,2,3,4], add10)
         # empty ks
-        self.assertRaises(KeyError, update_in, d, [], add10)
+        self.assertRaisesRegexp(KeyError, "Empty keys iterable", 
+                                update_in, d, [], add10)
 
         # this will happily update lists
         d = {1: {2: [1, 2, 3, 4]}}
@@ -148,8 +164,8 @@ class TestDictUtil(unittest.TestCase):
         self.assertEqual(d, {1: {2: [1, 2, 3, 14]}})
         # so we should, too
         d = {1: {2: [1, 2, 3, 4]}}
-        self.assertEqual(update_in(d, [1, 2, 3], add10),
-                         {1: {2: [1, 2, 3, 14]}})
+        update_in(d, [1, 2, 3], add10)
+        self.assertEqual(d, {1: {2: [1, 2, 3, 14]}})
 
 ## haskell
     #union is like merge

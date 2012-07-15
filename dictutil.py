@@ -47,17 +47,17 @@ def get_in(d, ks):
 
 def set_in(d, ks, v):
     """ Sets the value in a nested associative structure, where `ks` is a
-    sequence of keys. Creates the key if the key is not present.  Returns `d`
-    with updates.  MUTATES `d`."""
-    if not ks:
-        return d  #TODO: is this the correct semantics?
-    ks, lastkey = ks[:-1], ks[-1]  #don't modify orig. `ks`
+    sequence of keys. Creates the key if the key is not present.
+    MUTATES `d`."""
     tmp = d
-    for k in ks:
-        val = tmp.setdefault(k, {})
-        tmp = val
-    tmp[lastkey] = v
-    return d
+    i = None
+    for i, next_key in enumerate(ks):
+        if i > 0:
+            tmp = tmp.setdefault(current_key, {})
+        current_key = next_key
+    if i is None:
+        raise KeyError("Empty keys iterable")
+    tmp[current_key] = v
 
 def update_in(d, ks, f, *restargs):
     """'Updates' the value in a nested associative structure, where `ks` is a
@@ -67,14 +67,15 @@ def update_in(d, ks, f, *restargs):
     An error is raised if the key at any level does not exist.
     MUTATES `d`.
     """
-    if not ks:
-        raise KeyError
-    ks, lastkey = ks[:-1], ks[-1]  #don't modify orig. `ks`
     tmp = d
-    for k in ks:
-        tmp = tmp[k]
-    tmp[lastkey] = f(tmp[lastkey], *restargs)
-    return d
+    i = None
+    for i, next_key in enumerate(ks):
+        if i > 0:
+            tmp = tmp.setdefault(current_key, {})
+        current_key = next_key
+    if i is None:
+        raise KeyError("Empty keys iterable")
+    tmp[current_key] = f(tmp[current_key], *restargs)
 
 ## haskell
 
