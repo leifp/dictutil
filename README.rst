@@ -17,7 +17,7 @@ more pythonic.
 Usage
 -----
 
-`Examples <https://github.com/leifp/dictutil/wiki/Examples>` can be found 
+`Examples <https://github.com/leifp/dictutil/wiki/Examples>`_ can be found 
 on the wiki.
 
 License
