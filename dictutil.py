@@ -86,20 +86,21 @@ def update_in(d, ks, f, *restargs):
 def intersection(d1, d2):
     """Intersection of two dicts.
     Return data in the first dict for the keys existing in both dicts."""
-    #TODO: using the simplest possible implementation, not optimal
-    ks1 = set(d1.iterkeys())
-    ks2 = set(d2.iterkeys())
-    ks = ks1 & ks2
-    return dict((k, d1[k]) for k in ks)
+    ret = {}
+    for k in d1:
+        if k in d2:
+            ret[k] = d1[k]
+    return ret
+
 
 def difference(d1, d2):
     """Difference of two dicts.
     Return elements of the first dict not existing in the second dict."""
-    #TODO: using the simplest possible implementation, not optimal
-    ks1 = set(d1.iterkeys())
-    ks2 = set(d2.iterkeys())
-    ks = ks1 - ks2
-    return dict((k, d1[k]) for k in ks)
+    ret = {}
+    for k in d1:
+        if k not in d2:
+            ret[k] = d1[k]
+    return ret
 
 def map_values(f, d):
     """Map a function over all values in the dict."""
